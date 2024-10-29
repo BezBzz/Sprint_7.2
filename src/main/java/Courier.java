@@ -1,5 +1,4 @@
-import io.restassured.response.ValidatableResponse;
-import static io.restassured.RestAssured.given;
+
 public class Courier {
     private String login;
     private String password;
@@ -11,7 +10,7 @@ public class Courier {
         this.firstName = firstName;
     }
 
-    public Courier() {
+    public Courier(String ninja, String s) {
     }
 
     public void setLogin(String login) {
