@@ -12,11 +12,11 @@ import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 @RunWith(Parameterized.class)
-public class OrderTest {
+public class ParametrizedOrderTest {
     private static OrderApi orderApi;
-    private List<String> colors;
+    private String[] colors;
 
-    public OrderTest(List<String> colors) {
+    public ParametrizedOrderTest(String[] colors) {
         this.colors = colors;
     }
 
@@ -36,8 +36,8 @@ public class OrderTest {
     }
 
     @Test
-    public void createWithoutColor() {
-        Order order = new Order("Naruto", "Uchiha", "Konoha, 142 apt.", "4", "+7 800 355 35 35", "5", "2020-06-06", "Saske, come back to Konoha", new String[]{});
+    public void createOrderWithDifferentColor() {
+        Order order = new Order("Naruto", "Uchiha", "Konoha, 142 apt.", "4", "+7 800 355 35 35", "5", "2020-06-06", "Saske, come back to Konoha", colors);
         Response response = orderApi.createOrder(order);
         response
                 .then()
@@ -45,5 +45,8 @@ public class OrderTest {
                 .body("track", notNullValue());
 
     }
+
+
+
 
 }

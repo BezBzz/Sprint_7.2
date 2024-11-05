@@ -1,3 +1,5 @@
+import java.util.Collection;
+
 public class Order {
 
 
@@ -22,6 +24,9 @@ public class Order {
         this.comment = comment;
         this.color = color;
     }
+
+//    public Order(String naruto, String uchiha, String address, String metroStation, String phone, String rentTime, String deliveryDate, String comment, Collection<Object[]> color) {
+//    }
 
     public String getFirstName() {
         return firstName;

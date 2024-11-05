@@ -12,6 +12,7 @@ public class CourierTest {
     private String login = "ninja";
     private String password = "1234";
     private String firstName = "saske";
+    private int courierId;
 
 
     @Before
@@ -33,6 +34,7 @@ public class CourierTest {
         response.then()
                 .statusCode(SC_CREATED)
                 .body("ok", equalTo(true));
+        courierId = response.jsonPath().getInt("id");
     }
 
     @Test
