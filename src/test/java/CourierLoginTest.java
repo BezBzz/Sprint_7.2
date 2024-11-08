@@ -1,52 +1,64 @@
+import com.github.javafaker.Faker;
 import io.restassured.response.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static io.restassured.RestAssured.given;
-import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class CourierLoginTest {
+    private final Faker faker = new Faker();
     private CourierApi courierApi;
-    private String login = "ninja";
-    private String password = "1234";
-    private String firstName = "saske";
+    private String login = faker.name().username();
+    private String password = faker.internet().password(3, 6);
+    private String firstName = faker.name().firstName();
+    private String courierId;
 
     @Before
     public void setUp() {
         courierApi = new CourierApi();
     }
 
-    @Test
-    public void courierLoginSuccess() {
-        Courier courier = new Courier();
-        courierApi.createCourier(courier);
-        Response response = courierApi.loginCourier(login, password);
-        response.then()
-                .statusCode(SC_CREATED)
-                .body("ok", equalTo(true));
+    @After
+    public void tearDown() {
+        Response response = courierApi.deleteCourier(courierId);
+        response.then().statusCode(SC_OK).body("ok", equalTo(true));
+        System.out.println(response.body().asString());
     }
 
     @Test
-    public void cannotLoginWithIncorrectPassword() {
-        Courier courier = new Courier();
+    public void courierLoginSuccess() {
+        Courier courier = new Courier(login, password, firstName);
         courierApi.createCourier(courier);
-        Response response = courierApi.loginCourier(login,"132456");
+        Response response = courierApi.loginCourier(new CourierLogin(login, password));
         response.then()
-                .statusCode(SC_CREATED)
-                .body("message", equalTo("неправильно указать логин или пароль"));
+                .statusCode(SC_OK)
+                .body("id", notNullValue());
+        courierId = response.jsonPath().getString("id");
+        System.out.println(response.body().asString());
+    }
+
+    @Test
+    public void cannotLoginWithoutLoginAndPassword() {
+        CourierLogin courierLogin = new CourierLogin();
+        Response response = courierApi.loginCourier(courierLogin);
+        response.then()
+                .statusCode(SC_BAD_REQUEST)
+                .body("message", equalTo("Недостаточно данных для входа"));
+        System.out.println(response.body().asString());
     }
 
 
     @Test
     public void cannotLoginAbsentUser() {
-        Courier courier = new Courier();
-        courierApi.createCourier(courier);
-        Response response = courierApi.loginCourier("login", password);
+        CourierLogin courierLogin = new CourierLogin(login, password);
+        Response response = courierApi.loginCourier(courierLogin);
         response.then()
-                .statusCode(SC_CREATED)
-                .body("message", equalTo("пользователь не найден"));
+                .statusCode(SC_NOT_FOUND)
+                .body("message", equalTo("Учетная запись не найдена"));
+        System.out.println(response.body().asString());
     }
 
 }

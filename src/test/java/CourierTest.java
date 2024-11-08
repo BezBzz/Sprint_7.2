@@ -1,18 +1,17 @@
 import io.restassured.response.Response;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.apache.http.HttpStatus.SC_CREATED;
+import com.github.javafaker.Faker;
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.equalTo;
 
 public class CourierTest {
-
+private final Faker faker = new Faker();
     private CourierApi courierApi;
-    private String login = "ninja";
-    private String password = "1234";
-    private String firstName = "saske";
-    private int courierId;
+    private String login = faker.name().username();
+    private String password = faker.internet().password(3,6);
+    private String firstName = faker.name().firstName();
+
 
 
     @Before
@@ -20,12 +19,7 @@ public class CourierTest {
         courierApi = new CourierApi();
 
     }
-    @After
-    public void tearDown() {
-        Response loginResponse = courierApi.loginCourier(login, password);
-        int courierId = loginResponse.path("id");
-        courierApi.deleteCourier(courierId);
-    }
+
 
     @Test
     public void createCourierDone() {
@@ -34,7 +28,8 @@ public class CourierTest {
         response.then()
                 .statusCode(SC_CREATED)
                 .body("ok", equalTo(true));
-        courierId = response.jsonPath().getInt("id");
+        System.out.println(response.body().asString());
+
     }
 
     @Test
@@ -43,9 +38,9 @@ public class CourierTest {
         courierApi.createCourier(courier);
         Response response = courierApi.createCourier(courier);
         response.then()
-                .statusCode(SC_CREATED)
-                .body("message", equalTo("Этот логин уже используется"));
-
+                .statusCode(SC_CONFLICT)
+                .body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
+        System.out.println(response.body().asString());
     }
 
 
@@ -54,9 +49,9 @@ public class CourierTest {
         Courier courier = new Courier(null, password, firstName);
         Response response = courierApi.createCourier(courier);
         response.then()
-                .statusCode(SC_CREATED)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
-
+        System.out.println(response.body().asString());
 
     }
 

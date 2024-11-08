@@ -11,7 +11,7 @@ public class Order {
     private String rentTime;
     private String deliveryDate;
     private String comment;
-    private String[] color;
+    private String[] colors;
 
     public Order(String firstName, String lastName, String address, String metroStation, String phone, String rentTime, String deliveryDate, String comment, String[] color) {
         this.firstName = firstName;
@@ -22,10 +22,13 @@ public class Order {
         this.rentTime = rentTime;
         this.deliveryDate = deliveryDate;
         this.comment = comment;
-        this.color = color;
+        this.colors = color;
     }
 
-//    public Order(String naruto, String uchiha, String address, String metroStation, String phone, String rentTime, String deliveryDate, String comment, Collection<Object[]> color) {
+    public Order() {
+    }
+
+    //    public Order(String naruto, String uchiha, String address, String metroStation, String phone, String rentTime, String deliveryDate, String comment, Collection<Object[]> color) {
 //    }
 
     public String getFirstName() {
@@ -61,7 +64,7 @@ public class Order {
     }
 
     public String[] getColor() {
-        return color;
+        return colors;
     }
 
     public void setFirstName(String firstName) {
@@ -97,6 +100,6 @@ public class Order {
     }
 
     public void setColor(String[] color) {
-        this.color = color;
+        this.colors = color;
     }
 }
